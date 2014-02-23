@@ -55,33 +55,6 @@ void render_grid(SDL_Renderer *renderer, SDL_Point *grid, int w, int h) {
         SDL_RenderDrawLines(renderer, &grid[index], 2);
 }
 
-
-typedef struct s_entity {
-    Kinematic *kinematic;
-    int x, y, w, h;
-    float orientation;
-} Entity;
-
-SDL_Rect *entity_make_rect(Entity *e, SDL_Rect *output) {
-    if(!output)
-        output = (SDL_Rect *)malloc(sizeof(SDL_Rect));
-    output->x = e->x, output->y = e->y;
-    output->w = e->w, output->h = e->h;
-
-    return output;
-}
-
-Static *entity_make_static(Entity *e, Static *s) {
-    if(!s)
-        s = static_make(NULL);
-    s->position.x = (float)e->x;
-    s->position.y = (float)e->y;
-    s->position.z = 0.0f;
-    s->orientation = 0.0f;
-
-    return s;
-}
-
 int main(int argc, char** argv) {
     AppState app;
     app.quit = 0;
