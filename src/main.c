@@ -47,7 +47,7 @@ KinematicSeek* kmseek_make(KinematicSeek *k) {
     if(!k)
         k = (KinematicSeek*)calloc(1, sizeof(KinematicSeek));
 
-    k->max_speed = 1.0;
+    k->max_speed = 1.0f;
     return k;
 }
 Static* static_make(Static *s) {
