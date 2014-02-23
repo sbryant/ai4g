@@ -23,7 +23,9 @@ Static *entity_make_static(Entity *e, Static *s) {
     if(!s)
         s = static_make(NULL);
 
-    vec3_set_vec3(&(s->position), &(e->position));
+    s->position.x = e->x;
+    s->position.y = e->y;
+    s->position.z = 0.0f;
     s->orientation = 0.0f;
 
     return s;
