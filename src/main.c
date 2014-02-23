@@ -164,6 +164,7 @@ int main(int argc, char** argv) {
     player.kinematic->position.y = 30.0f;
 
     float simulation_time = 0, now = 0;
+    srand(SDL_GetTicks());
     while(1) {
         now = SDL_GetTicks();
 
