@@ -4,6 +4,9 @@ Entity *entity_make(Entity *in) {
     Entity *out = in;
     if(!in)
         out = (Entity *)calloc(1, sizeof(Entity));
+
+    if(!(out->kinematic))
+        out->kinematic = km_make(NULL);
     return out;
 }
 
