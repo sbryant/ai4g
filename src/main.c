@@ -180,23 +180,37 @@ int main(int argc, char** argv) {
             entity_make_static(&target, &(k.target));
             entity_make_static(&player, &(k.character));
 
+            KinematicWander kw;
+            bzero(&kw, sizeof(KinematicWander));
+            kw.max_speed = 0.2f;
+            kw.max_rotation = 0.1f;
+            entity_make_static(&target, &(kw.character));
+
             // Get velocity and orientation from output
             KinematicSteeringOutput *ksteering = kmarrive_get_steering(&k);
+            KinematicSteeringOutput *kwsteering = kmwander_get_steering(&kw);
 
             if(ksteering) {
                 // Setup our steering from the KinematicSteeringOutput
                 SteeringOutput steering;
+                SteeringOutput wsteering;
                 vec3_set_vec3(&(steering.linear), &(ksteering->velocity));
+                vec3_set_vec3(&(wsteering.linear), &(kwsteering->velocity));
                 steering.angular = 0.0f;
+                wsteering.angular = kwsteering->rotation;
 
                 // Update chasing character's velocity from the KinematicSteeringOutput
                 // This will actually stop the character once it is close enough
                 vec3_set_vec3(&(player.kinematic->velocity), &(steering.linear));
+                vec3_set_vec3(&(target.kinematic->velocity), &(wsteering.linear));
 
                 // Move the character
                 km_update(player.kinematic, &steering, 1.0f);
+                km_update(target.kinematic, &wsteering, 1.0f);
                 place_entity(&player, roundf(player.kinematic->position.x), roundf(player.kinematic->position.y));
+                place_entity(&target, roundf(target.kinematic->position.x), roundf(target.kinematic->position.y));
                 free(ksteering);
+                free(kwsteering);
             }
         }
 
