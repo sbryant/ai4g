@@ -12,6 +12,11 @@
 #define GRID_H 50
 #define GRID_W 50
 
+#define GRID_SIZE_X 600
+#define GRID_SIZE_Y 600
+
+#define GRID_SPACING_X GRID_SIZE_X / GRID_W
+#define GRID_SPACING_Y GRID_SIZE_Y / 6RID_H
 
 typedef struct s_app_state {
     short quit;
