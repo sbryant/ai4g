@@ -249,9 +249,48 @@ int main(int argc, char** argv) {
     target.y *= 2;
     target.y -= 1;
 
+    float simulation_time = 0, now = 0;
     while(1) {
-        SDL_Event event;
-        while(SDL_PollEvent(&event));
+        now = SDL_GetTicks();
+
+        while(simulation_time < now) {
+            simulation_time += 16.0f;
+
+            KinematicSeek k;
+            bzero(&k, sizeof(KinematicSeek));
+            k.max_speed = 1.0f;
+            entity_make_static(&target, &(k.target));
+            entity_make_static(&player, &(k.character));
+
+            KinematicSteeringOutput *ksteering = kmseek_get_steering(&k);
+            SteeringOutput steering;
+            vec3_set_vec3(&(steering.linear), &(ksteering->velocity));
+            steering.angular = 0.0f;
+
+            Kinematic input;
+            bzero(&input, sizeof(Kinematic));
+            vec3_set_vec3(&(input.position), &(k.character.position));
+            input.orientation = k.character.orientation;
+            input.rotation = 0.0f;
+
+            if(vec3_length(&(steering.linear)) != 0.0f) {
+                printf("velocity\n");
+                vec3_print(&(steering.linear));
+            }
+            vec3_set_vec3(&(input.velocity), &(steering.linear));
+
+            km_update(&input, &steering, 16.0f);
+            free(ksteering);
+
+            if(vec3_length(&(steering.linear)) != 0.0f) {
+                printf("position\n");
+                vec3_print(&(input.position));
+            }
+
+            player.x = roundf(input.position.x);
+            player.y = roundf(input.position.y);
+            player.orientation = input.orientation;
+        }
 
         SDL_SetRenderDrawColor(renderer,
                                0, 0, 0, SDL_ALPHA_OPAQUE);
