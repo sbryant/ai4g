@@ -6,6 +6,7 @@
 #include <SDL.h>
 
 #include "vector.h"
+#include "kinematic.h"
 
 #define GRID_H 50
 #define GRID_W 50
