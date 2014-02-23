@@ -7,6 +7,7 @@
 
 #include "vector.h"
 #include "kinematic.h"
+#include "entity.h"
 
 #define GRID_H 50
 #define GRID_W 50
