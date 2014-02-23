@@ -12,11 +12,11 @@
 #define GRID_H 50
 #define GRID_W 50
 
-#define GRID_SIZE_X 600
-#define GRID_SIZE_Y 600
+#define GRID_SIZE_W 600
+#define GRID_SIZE_H 600
 
-#define GRID_SPACING_X GRID_SIZE_X / GRID_W
-#define GRID_SPACING_Y GRID_SIZE_Y / 6RID_H
+#define GRID_SPACING_X GRID_SIZE_W / GRID_W
+#define GRID_SPACING_Y GRID_SIZE_H / 6RID_H
 
 typedef struct s_app_state {
     short quit;
@@ -122,8 +122,8 @@ int main(int argc, char** argv) {
 
     grid_points = calloc((num_vert_lines * 2)  + (num_horiz_lines * 2), sizeof(SDL_Point));
 
-    float spacing_x = (600 / (float)num_vert_lines);
-    float spacing_y = (600 / (float)num_horiz_lines);
+    float spacing_x = (GRID_SIZE_W / (float)num_vert_lines);
+    float spacing_y = (GRID_SIZE_H / (float)num_horiz_lines);
 
     //int start = 1280 / 2;
 
