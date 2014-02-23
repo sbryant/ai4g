@@ -201,6 +201,8 @@ int main(int argc, char** argv) {
     }
 
     free(grid_points);
+    free(player->kinematic);
+    free(target->kinematic);
 
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
