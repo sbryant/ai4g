@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <strings.h>
+#include <time.h>
 
 #include <SDL.h>
 
@@ -164,7 +165,7 @@ int main(int argc, char** argv) {
     player.kinematic->position.y = 30.0f;
 
     float simulation_time = 0, now = 0;
-    srand(SDL_GetTicks());
+    srand(time(NULL));
     while(1) {
         now = SDL_GetTicks();
 
