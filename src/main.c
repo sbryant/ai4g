@@ -162,26 +162,35 @@ int main(int argc, char** argv) {
         while(simulation_time < now) {
             simulation_time += 16.0f;
 
+            // Setup steering algorithim inputs
             KinematicSeek k;
             bzero(&k, sizeof(KinematicSeek));
             k.max_speed = 0.1f;
             entity_make_static(&target, &(k.target));
             entity_make_static(&player, &(k.character));
 
+            // Get velocity and orientation from output
             KinematicSteeringOutput *ksteering = kmseek_get_steering(&k);
+
+            // Setup our steering from the KinematicSteeringOutput
             SteeringOutput steering;
             vec3_set_vec3(&(steering.linear), &(ksteering->velocity));
-
             steering.angular = 0.0f;
 
+            // Update chasing character's velocity from the KinematicSteeringOutput
+            // This will actually stop the character once it is close enough
             vec3_set_vec3(&(player.kinematic->velocity), &(steering.linear));
 
+            // Move the character
             km_update(player.kinematic, &steering, 1.0f);
-            free(ksteering);
-
             place_entity(&player, roundf(player.kinematic->position.x), roundf(player.kinematic->position.y));
+            free(ksteering);
         }
 
+        SDL_Event event;
+        while(SDL_PollEvent(&event));
+
+        // Reset to black
         SDL_SetRenderDrawColor(renderer,
                                0, 0, 0, SDL_ALPHA_OPAQUE);
         SDL_RenderClear(renderer);
@@ -192,9 +201,6 @@ int main(int argc, char** argv) {
         render_entity(renderer, &target);
 
         SDL_RenderPresent(renderer);
-
-        SDL_Event event;
-        while(SDL_PollEvent(&event));
 
         if(app.quit)
             break;
