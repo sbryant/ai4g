@@ -153,7 +153,15 @@ int main(int argc, char** argv) {
     entity_init(&target, spacing_x, spacing_y);
     target.b = 255;
 
-    place_entity(&target, 4.0f, 19.0f);
+    place_entity(&player, 2, 30);
+    place_entity(&target, 4, 19);
+
+    /* dirty intial kinematic positions */
+    target.kinematic->position.x = 4.0f;
+    target.kinematic->position.y = 19.0f;
+
+    player.kinematic->position.x = 2.0f;
+    player.kinematic->position.y = 30.0f;
 
     float simulation_time = 0, now = 0;
     while(1) {
