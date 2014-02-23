@@ -182,6 +182,13 @@ void vec4_print(vec4* const v) {
            v->w);
 }
 
+void vec3_print(vec3* const v) {
+    printf("x:%.3f y:%.3f z%.3f\n",
+           v->x,
+           v->y,
+           v->z);
+}
+
 
 void vec3_set_vec3(vec3 *v1, vec3 *v2) {
     v1->x = v2->x;
