@@ -83,8 +83,8 @@ int main(int argc, char** argv) {
 
     grid_points = calloc((num_vert_lines * 2)  + (num_horiz_lines * 2), sizeof(SDL_Point));
 
-    int spacing_x = (600 / num_vert_lines);
-    int spacing_y = (600 / num_horiz_lines);
+    float spacing_x = (600 / (float)num_vert_lines);
+    float spacing_y = (600 / (float)num_horiz_lines);
 
     //int start = 1280 / 2;
 
