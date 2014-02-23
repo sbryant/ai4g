@@ -106,6 +106,16 @@ vec4 *vec4_div_scalar(vec4* const v, float const s) {
     return v2;
 }
 
+vec3 *vec3_div_scalar(const vec3* v, const float s, vec3 *out) {
+    vec3* v2 = vec3_make();
+
+    v2->x = s / v->x ;
+    v2->y = s / v->y;
+    v2->z = s / v->z;
+
+    return v2;
+}
+
 vec4* vec4_make(void) {
     return (vec4 *)calloc(1, sizeof(vec4));
 }

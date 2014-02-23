@@ -24,6 +24,7 @@ vec3* vec3_sub(const vec3 *v1, const vec3 *v2, vec3 *out);
 vec4 *vec4_mul_scalar(vec4* const v, float const s);
 vec3 *vec3_mul_scalar(const vec3 *v, const float s, vec3* out);
 vec4 *vec4_div_scalar(vec4* const v, float const s);
+vec3 *vec3_div_scalar(const vec3 *v, const float s, vec3* out);
 
 vec4 *vec4_normalize(vec4* const v);
 vec3 *vec3_normalize(const vec3 *v, vec3 *out);
