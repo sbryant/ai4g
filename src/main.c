@@ -144,30 +144,16 @@ int main(int argc, char** argv) {
     }
 
     Entity player;
-    player.x = spacing_x + 1;
-    player.y = spacing_y + 1;
-    player.w = spacing_x - 1;
-    player.h = spacing_y - 1;
-    player.orientation = 1.0f;
+    player.kinematic = km_make(NULL);
+    entity_init(&player, spacing_x, spacing_y);
+    player.r = 255, player.b = 255;
 
     Entity target;
-    target.x = spacing_x + 1;
-    target.y = spacing_y + 1;
-    target.w = spacing_x - 1;
-    target.h = spacing_y - 1;
-    target.orientation = 1.0f;
+    target.kinematic = km_make(NULL);
+    entity_init(&target, spacing_x, spacing_y);
+    target.b = 255;
 
-    /*
-       to move target to N,N
-       from default position
-       multiple target x by N and then subtract N - 1
-       do the same for Y
-    */
-    target.x *= 30;
-    target.x -= 29;
-
-    target.y *= 2;
-    target.y -= 1;
+    place_entity(&target, 4.0f, 19.0f);
 
     float simulation_time = 0, now = 0;
     while(1) {
@@ -185,31 +171,15 @@ int main(int argc, char** argv) {
             KinematicSteeringOutput *ksteering = kmseek_get_steering(&k);
             SteeringOutput steering;
             vec3_set_vec3(&(steering.linear), &(ksteering->velocity));
+
             steering.angular = 0.0f;
 
-            Kinematic input;
-            bzero(&input, sizeof(Kinematic));
-            vec3_set_vec3(&(input.position), &(k.character.position));
-            input.orientation = k.character.orientation;
-            input.rotation = 0.0f;
+            vec3_set_vec3(&(player.kinematic->velocity), &(steering.linear));
 
-            if(vec3_length(&(steering.linear)) != 0.0f) {
-                printf("velocity\n");
-                vec3_print(&(steering.linear));
-            }
-            vec3_set_vec3(&(input.velocity), &(steering.linear));
-
-            km_update(&input, &steering, 16.0f);
+            km_update(player.kinematic, &steering, 1.0f);
             free(ksteering);
 
-            if(vec3_length(&(steering.linear)) != 0.0f) {
-                printf("position\n");
-                vec3_print(&(input.position));
-            }
-
-            player.x = roundf(input.position.x);
-            player.y = roundf(input.position.y);
-            player.orientation = input.orientation;
+            place_entity(&player, roundf(player.kinematic->position.x), roundf(player.kinematic->position.y));
         }
 
         SDL_SetRenderDrawColor(renderer,
@@ -218,19 +188,8 @@ int main(int argc, char** argv) {
 
         render_grid(renderer, grid_points, num_vert_lines, num_horiz_lines);
 
-        SDL_Rect rect;
-        entity_make_rect(&player, &rect);
-        // Draw entity A
-        SDL_SetRenderDrawColor(renderer,
-                               0, 0, 255, SDL_ALPHA_OPAQUE);
-        SDL_RenderFillRect(renderer, &rect);
-
-
-        entity_make_rect(&target, &rect);
-        //Draw entity target
-        SDL_SetRenderDrawColor(renderer,
-                              255, 0, 255, SDL_ALPHA_OPAQUE);
-        SDL_RenderFillRect(renderer, &rect);
+        render_entity(renderer, &player);
+        render_entity(renderer, &target);
 
         SDL_RenderPresent(renderer);
 
