@@ -164,7 +164,7 @@ int main(int argc, char** argv) {
 
             KinematicSeek k;
             bzero(&k, sizeof(KinematicSeek));
-            k.max_speed = 1.0f;
+            k.max_speed = 0.1f;
             entity_make_static(&target, &(k.target));
             entity_make_static(&player, &(k.character));
 
