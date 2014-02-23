@@ -214,9 +214,6 @@ int main(int argc, char** argv) {
             }
         }
 
-        SDL_Event event;
-        while(SDL_PollEvent(&event));
-
         // Reset to black
         SDL_SetRenderDrawColor(renderer,
                                0, 0, 0, SDL_ALPHA_OPAQUE);
@@ -228,6 +225,10 @@ int main(int argc, char** argv) {
         render_entity(renderer, &target);
 
         SDL_RenderPresent(renderer);
+
+        // Process any events
+        SDL_Event event;
+        while(SDL_PollEvent(&event));
 
         if(app.quit)
             break;
