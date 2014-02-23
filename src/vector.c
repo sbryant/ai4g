@@ -134,6 +134,9 @@ vec3 *vec3_normalize(const vec3 *v, vec3 *out) {
 
     float v_len = vec3_length(v);
 
+    if(v_len == 0.0f)
+        return v2;
+
     v2->x = v->x / v_len;
     v2->y = v->y / v_len;
     v2->z = v->z / v_len;
