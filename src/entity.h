@@ -5,10 +5,9 @@
 #include "kinematic.h"
 
 typedef struct s_entity {
-    Kinematic *kinematic;
     vec3 position;
+    Kinematic *kinematic;
     float w, h;
-    float orientation;
     int x, y;
     int spacing_x;
     int spacing_y;
