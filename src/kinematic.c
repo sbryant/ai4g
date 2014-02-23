@@ -9,6 +9,17 @@ KinematicSeek* kmseek_make(KinematicSeek *k) {
     k->max_speed = 1.0f;
     return k;
 }
+
+KinematicArrive* kmarrive_make(KinematicArrive *k) {
+    if(!k)
+        k = (KinematicArrive*)calloc(1, sizeof(KinematicArrive));
+
+    k->max_speed = 1.0f;
+    k->radius = 1.0f;
+    k->time_to_target = 0.25f;
+    return k;
+}
+
 Static* static_make(Static *s) {
     if(!s)
         s = (Static*)calloc(1, sizeof(Static));
@@ -68,6 +79,35 @@ KinematicSteeringOutput* kmseek_get_steering(KinematicSeek* k) {
     vec3_mul_scalar(&(steering->velocity), k->max_speed, &(steering->velocity));
 
     /* face the correct direction we will be moving*/
+    k->character.orientation = get_new_orientation(&(k->character), k->character.orientation, &(steering->velocity));
+
+    steering->rotation = 0.0f;
+    return steering;
+}
+
+KinematicSteeringOutput* kmarrive_get_steering(KinematicArrive* k) {
+    KinematicSteeringOutput *steering = kso_make(NULL);
+
+    // Direction to Target (aka velocity)
+    vec3_sub(&(k->target.position), &(k->character.position), &(steering->velocity));
+
+    // Check if we're within radius
+    if(vec3_length(&(steering->velocity)) < k->radius) {
+        // We're there, no steering to return
+        free(steering);
+        NULL;
+    }
+
+    // Move to target in time to target seconds
+    vec3_div_scalar(&(steering->velocity), k->time_to_target, &(steering->velocity));
+
+    // If we're moving to fast, clip our speed
+    if(vec3_length(&(steering->velocity)) > k->max_speed) {
+        vec3_normalize(&(steering->velocity), &(steering->velocity));
+        vec3_mul_scalar(&(steering->velocity), k->max_speed, &(steering->velocity));
+    }
+
+    // face the correct direction we will be moving
     k->character.orientation = get_new_orientation(&(k->character), k->character.orientation, &(steering->velocity));
 
     steering->rotation = 0.0f;
