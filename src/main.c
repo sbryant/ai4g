@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <strings.h>
 
 #include <SDL.h>
 
@@ -146,6 +147,33 @@ void render_grid(SDL_Renderer *renderer, SDL_Point *grid, int w, int h) {
         SDL_RenderDrawLines(renderer, &grid[index], 2);
 }
 
+
+typedef struct s_entity {
+    Kinematic *kinematic;
+    int x, y, w, h;
+    float orientation;
+} Entity;
+
+SDL_Rect *entity_make_rect(Entity *e, SDL_Rect *output) {
+    if(!output)
+        output = (SDL_Rect *)malloc(sizeof(SDL_Rect));
+    output->x = e->x, output->y = e->y;
+    output->w = e->w, output->h = e->h;
+
+    return output;
+}
+
+Static *entity_make_static(Entity *e, Static *s) {
+    if(!s)
+        s = static_make(NULL);
+    s->position.x = (float)e->x;
+    s->position.y = (float)e->y;
+    s->position.z = 0.0f;
+    s->orientation = 0.0f;
+
+    return s;
+}
+
 int main(int argc, char** argv) {
     AppState app;
     app.quit = 0;
@@ -195,23 +223,31 @@ int main(int argc, char** argv) {
         grid_points[index+1] = hl_end;
     }
 
-    SDL_Rect player;
+    Entity player;
     player.x = spacing_x + 1;
     player.y = spacing_y + 1;
     player.w = spacing_x - 1;
     player.h = spacing_y - 1;
+    player.orientation = 1.0f;
 
-    SDL_Rect target;
+    Entity target;
     target.x = spacing_x + 1;
     target.y = spacing_y + 1;
     target.w = spacing_x - 1;
     target.h = spacing_y - 1;
+    target.orientation = 1.0f;
 
-    target.x *= 6;
-    target.x -= 5;
+    /*
+       to move target to N,N
+       from default position
+       multiple target x by N and then subtract N - 1
+       do the same for Y
+    */
+    target.x *= 30;
+    target.x -= 29;
 
-    target.y *= 6;
-    target.y -= 5;
+    target.y *= 2;
+    target.y -= 1;
 
     while(1) {
         SDL_Event event;
@@ -223,18 +259,25 @@ int main(int argc, char** argv) {
 
         render_grid(renderer, grid_points, num_vert_lines, num_horiz_lines);
 
+        SDL_Rect rect;
+        entity_make_rect(&player, &rect);
         // Draw entity A
         SDL_SetRenderDrawColor(renderer,
                                0, 0, 255, SDL_ALPHA_OPAQUE);
-        SDL_RenderFillRect(renderer, &player);
+        SDL_RenderFillRect(renderer, &rect);
 
 
-
+        entity_make_rect(&target, &rect);
+        //Draw entity target
         SDL_SetRenderDrawColor(renderer,
                               255, 0, 255, SDL_ALPHA_OPAQUE);
-        SDL_RenderFillRect(renderer, &target);
+        SDL_RenderFillRect(renderer, &rect);
 
         SDL_RenderPresent(renderer);
+
+        SDL_Event event;
+        while(SDL_PollEvent(&event));
+
         if(app.quit)
             break;
     }
