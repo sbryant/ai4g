@@ -135,8 +135,8 @@ KinematicSteeringOutput* kmwander_get_steering(KinematicWander* k) {
     vec3_mul_scalar(&orientation, k->max_speed, &(steering->velocity));
 
     /* random value between -1,1 */
-    float rand1 = rand() / RAND_MAX;
-    float rand2 = rand() / RAND_MAX;
+    float rand1 = rand() / (float)RAND_MAX;
+    float rand2 = rand() / (float)RAND_MAX;
     float rand = rand1 - rand2;
 
     // Chage the rotation randomly
