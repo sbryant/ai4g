@@ -163,28 +163,32 @@ int main(int argc, char** argv) {
             simulation_time += 16.0f;
 
             // Setup steering algorithim inputs
-            KinematicSeek k;
-            bzero(&k, sizeof(KinematicSeek));
+            KinematicArrive k;
+            bzero(&k, sizeof(KinematicArrive));
             k.max_speed = 0.1f;
+            k.radius = 1.0f;
+            k.time_to_target = 0.25f;
             entity_make_static(&target, &(k.target));
             entity_make_static(&player, &(k.character));
 
             // Get velocity and orientation from output
-            KinematicSteeringOutput *ksteering = kmseek_get_steering(&k);
+            KinematicSteeringOutput *ksteering = kmarrive_get_steering(&k);
 
-            // Setup our steering from the KinematicSteeringOutput
-            SteeringOutput steering;
-            vec3_set_vec3(&(steering.linear), &(ksteering->velocity));
-            steering.angular = 0.0f;
+            if(ksteering) {
+                // Setup our steering from the KinematicSteeringOutput
+                SteeringOutput steering;
+                vec3_set_vec3(&(steering.linear), &(ksteering->velocity));
+                steering.angular = 0.0f;
 
-            // Update chasing character's velocity from the KinematicSteeringOutput
-            // This will actually stop the character once it is close enough
-            vec3_set_vec3(&(player.kinematic->velocity), &(steering.linear));
+                // Update chasing character's velocity from the KinematicSteeringOutput
+                // This will actually stop the character once it is close enough
+                vec3_set_vec3(&(player.kinematic->velocity), &(steering.linear));
 
-            // Move the character
-            km_update(player.kinematic, &steering, 1.0f);
-            place_entity(&player, roundf(player.kinematic->position.x), roundf(player.kinematic->position.y));
-            free(ksteering);
+                // Move the character
+                km_update(player.kinematic, &steering, 1.0f);
+                place_entity(&player, roundf(player.kinematic->position.x), roundf(player.kinematic->position.y));
+                free(ksteering);
+            }
         }
 
         SDL_Event event;
