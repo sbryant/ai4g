@@ -37,13 +37,21 @@ typedef struct s_kinematic_arrive {
     float time_to_target;
 } KinematicArrive;
 
+typedef struct s_kinematic_wander {
+    Static character;
+    float max_speed;
+    float max_rotation;
+} KinematicWander;
+
 Static* static_make(Static *s);
 Kinematic* km_make(Kinematic *k);
 KinematicSteeringOutput* kso_make(KinematicSteeringOutput *s);
 SteeringOutput* so_make(SteeringOutput *s);
 KinematicSeek* kmseek_make(KinematicSeek *k);
 KinematicArrive* kmarrive_make(KinematicArrive *k);
+KinematicWander* kmwander_make(KinematicWander *k);
 float get_new_orientation(Static *s, float current, vec3 *velocity);
 void km_update(Kinematic *input, SteeringOutput *steering, float time);
 KinematicSteeringOutput* kmseek_get_steering(KinematicSeek* k);
 KinematicSteeringOutput* kmarrive_get_steering(KinematicArrive* k);
+KinematicSteeringOutput* kmwander_get_steering(KinematicWander* k);

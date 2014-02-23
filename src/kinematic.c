@@ -20,6 +20,15 @@ KinematicArrive* kmarrive_make(KinematicArrive *k) {
     return k;
 }
 
+KinematicWander* kmwander_make(KinematicWander *k) {
+    if(!k)
+        k = (KinematicWander*)calloc(1, sizeof(KinematicWander));
+
+    k->max_speed = 1.0f;
+    k->max_rotation = 0.8f;
+    return k;
+}
+
 Static* static_make(Static *s) {
     if(!s)
         s = (Static*)calloc(1, sizeof(Static));
@@ -111,5 +120,26 @@ KinematicSteeringOutput* kmarrive_get_steering(KinematicArrive* k) {
     k->character.orientation = get_new_orientation(&(k->character), k->character.orientation, &(steering->velocity));
 
     steering->rotation = 0.0f;
+    return steering;
+}
+
+KinematicSteeringOutput* kmwander_get_steering(KinematicWander* k) {
+    KinematicSteeringOutput *steering = kso_make(NULL);
+
+    // convert orentation to a vector
+    vec3 orientation;
+    orientation.x = sinf(k->character.orientation);
+    orientation.y = cosf(k->character.orientation);
+    orientation.z = 0.0f;
+
+    vec3_mul_scalar(&orientation, k->max_speed, &(steering->velocity));
+
+    /* random value between -1,1 */
+    float rand1 = rand() / RAND_MAX;
+    float rand2 = rand() / RAND_MAX;
+    float rand = rand1 - rand2;
+
+    // Chage the rotation randomly
+    steering->rotation = rand * k->max_rotation;
     return steering;
 }
