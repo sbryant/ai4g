@@ -123,6 +123,11 @@ int KeyboardEventFilter(void *user_data, SDL_Event *event) {
         ke = event->key;
         if(ke.keysym.sym == SDLK_q && ke.keysym.mod & KMOD_GUI)
             app->quit = 1;
+        break;
+    case SDL_WINDOWEVENT:
+        if(event->window.event == SDL_WINDOWEVENT_CLOSE)
+            app->quit = 1;
+        break;
     }
 
     return 0;
