@@ -42,6 +42,45 @@ int KeyboardEventFilter(void *user_data, SDL_Event *event) {
     return 0;
 }
 
+void place_entity(Entity *e, int x, int y) {
+    e->x = x, e->y = y;
+
+    // offset by a pixel
+    e->position.x = e->spacing_x + 1.0f;
+    e->position.y = e->spacing_y + 1.0f;
+
+    // offset
+    e->w = e->spacing_x - 1.0f;
+    e->h = e->spacing_y - 1.0f;
+
+    e->position.x *= (x + 1);
+    e->position.x -= x;
+
+    e->position.y *= (y + 1);
+    e->position.y -= y;
+}
+
+void entity_init(Entity *e, int spacing_x, int spacing_y) {
+    bzero(&(e->position), sizeof(vec3));
+    e->w = 0, e->h = 0;
+    e->x = 0, e->y = 0;
+    e->spacing_x = spacing_x, e->spacing_y = spacing_y;
+    e->r = 0, e->g = 0, e->b = 0;
+    e->a = SDL_ALPHA_OPAQUE;
+    e->kinematic->position.x = 0.0f, e->kinematic->position.y = 0.0f, e->kinematic->position.z = 0.0f;
+    e->kinematic->orientation = 0.0f;
+    place_entity(e, 0, 0);
+}
+
+void render_entity(SDL_Renderer *renderer, Entity *e) {
+    SDL_Rect rect;
+    entity_make_rect(e, &rect);
+    // Draw entity A
+    SDL_SetRenderDrawColor(renderer,
+                           e->r, e->g, e->b, e->a);
+    SDL_RenderFillRect(renderer, &rect);
+}
+
 void render_grid(SDL_Renderer *renderer, SDL_Point *grid, int w, int h) {
     SDL_SetRenderDrawColor(renderer,
                            0, 255, 0, SDL_ALPHA_OPAQUE);
