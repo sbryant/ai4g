@@ -108,7 +108,8 @@ KinematicSteeringOutput* kmarrive_get_steering(KinematicArrive* k) {
     }
 
     // Move to target in time to target seconds
-    vec3_div_scalar(&(steering->velocity), k->time_to_target, &(steering->velocity));
+    if(k->time_to_target != 0.0f)
+        vec3_div_scalar(&(steering->velocity), k->time_to_target, &(steering->velocity));
 
     // If we're moving to fast, clip our speed
     if(vec3_length(&(steering->velocity)) > k->max_speed) {
