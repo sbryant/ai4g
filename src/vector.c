@@ -107,11 +107,19 @@ vec4 *vec4_div_scalar(vec4* const v, float const s) {
 }
 
 vec3 *vec3_div_scalar(const vec3* v, const float s, vec3 *out) {
-    vec3* v2 = vec3_make();
+    vec3* v2 = out;
+    if(!v2)
+        v2 = vec3_make();
 
-    v2->x = s / v->x ;
-    v2->y = s / v->y;
-    v2->z = s / v->z;
+    if(!s)
+        return v2;
+
+    if(v->x)
+        v2->x = v->x / s;
+    if(v->y)
+        v2->y = v->y / s;
+    if(v->z)
+        v2->z = v->z / s;
 
     return v2;
 }
