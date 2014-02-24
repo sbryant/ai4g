@@ -34,3 +34,10 @@ Static *entity_make_static(Entity *e, Static *s) {
 
     return s;
 }
+
+void entity_init(Entity *e) {
+    if(!(e->kinematic))
+        e->kinematic = km_make(NULL);
+    e->kinematic->position.x = 0.0f, e->kinematic->position.y = 0.0f, e->kinematic->position.z = 0.0f;
+    e->kinematic->orientation = 0.0f;
+}
