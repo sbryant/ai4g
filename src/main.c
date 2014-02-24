@@ -51,9 +51,9 @@ void entity_init(Entity *e, int spacing_x, int spacing_y) {
     e->kinematic->orientation = 0.0f;
 }
 
-void render_entity(SDL_Surface *surface, Entity *e) {
+void render_entity(SDL_Surface *surface, Entity *e, int w, int h) {
     SDL_Rect rect;
-    entity_make_rect(e, &rect);
+    entity_make_rect(e, w, h, &rect);
     SDL_FillRect(surface, &rect, SDL_MapRGBA(surface->format, e->r, e->g, e->b, e->a));
 }
 
@@ -187,8 +187,9 @@ int main(int argc, char** argv) {
         // Draw grid and Entities
         SDL_FillRect(grid_surface, NULL, SDL_MapRGBA(grid_surface->format, 0, 0, 0, 255));
         render_grid(grid_surface, grid_rects, num_vert_lines + num_horiz_lines);
-        render_entity(grid_surface, &player);
-        render_entity(grid_surface, &target);
+        // entities are spacing_x - 1 wide, / spacing_y - 1 pixels high
+        render_entity(grid_surface, &player, spacing_x - 1, spacing_y - 1);
+        render_entity(grid_surface, &target, spacing_x - 1, spacing_y - 1);
 
         // Upload pixels to video card
         SDL_UpdateTexture(grid_texture, NULL, grid_surface->pixels, grid_surface->pitch);

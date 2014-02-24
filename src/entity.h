@@ -6,11 +6,9 @@
 
 typedef struct s_entity {
     Kinematic *kinematic;
-    int spacing_x;
-    int spacing_y;
     short r,g,b,a;
 } Entity;
 
 Entity *entity_make(Entity *in);
-SDL_Rect *entity_make_rect(Entity *e, SDL_Rect *output);
+SDL_Rect *entity_make_rect(Entity *e, int w, int h, SDL_Rect *output);
 Static *entity_make_static(Entity *e, Static *s);

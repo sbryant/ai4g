@@ -10,14 +10,15 @@ Entity *entity_make(Entity *in) {
     return out;
 }
 
-SDL_Rect *entity_make_rect(Entity *e, SDL_Rect *output) {
+SDL_Rect *entity_make_rect(Entity *e, int w, int h, SDL_Rect *output) {
     if(!output)
         output = (SDL_Rect *)malloc(sizeof(SDL_Rect));
-    output->x = e->spacing_x * roundf(e->kinematic->position.x) + 1.0f;
-    output->y = e->spacing_y * roundf(e->kinematic->position.y) + 1.0f;
 
-    output->w = e->spacing_x - 1.0f;
-    output->h = e->spacing_y - 1.0f;
+    output->x = (w + 1) * roundf(e->kinematic->position.x) + 1.0f;
+    output->y = (h + 1) * roundf(e->kinematic->position.y) + 1.0f;
+
+    output->w = w;
+    output->h = h;
 
     return output;
 }
@@ -26,8 +27,8 @@ Static *entity_make_static(Entity *e, Static *s) {
     if(!s)
         s = static_make(NULL);
 
-    s->position.x = roundf(e->kinematic->position.x);
-    s->position.y = roundf(e->kinematic->position.y);
+    s->position.x = e->kinematic->position.x;
+    s->position.y = e->kinematic->position.y;
     s->position.z = 0.0f;
     s->orientation = 0.0f;
 
