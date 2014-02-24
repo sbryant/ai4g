@@ -47,18 +47,18 @@ void place_entity(Entity *e, int x, int y) {
     e->x = x, e->y = y;
 
     // offset by a pixel
-    e->position.x = e->spacing_x + 1.0f;
-    e->position.y = e->spacing_y + 1.0f;
+    e->position.x = e->spacing_x;
+    e->position.y = e->spacing_y;
 
     // offset
     e->w = e->spacing_x - 1.0f;
     e->h = e->spacing_y - 1.0f;
 
-    e->position.x *= (x + 1);
-    e->position.x -= x;
+    e->position.x *= x;
+    e->position.x += 1;
 
-    e->position.y *= (y + 1);
-    e->position.y -= y;
+    e->position.y *= y;
+    e->position.y += 1;
 }
 
 void entity_init(Entity *e, int spacing_x, int spacing_y) {
