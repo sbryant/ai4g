@@ -104,7 +104,7 @@ KinematicSteeringOutput* kmarrive_get_steering(KinematicArrive* k) {
     if(vec3_length(&(steering->velocity)) < k->radius) {
         // We're there, no steering to return
         free(steering);
-        NULL;
+        return NULL;
     }
 
     // Move to target in time to target seconds
