@@ -38,7 +38,7 @@ Static* static_make(Static *s) {
 Kinematic* km_make(Kinematic *k) {
     if(!k)
         k = (Kinematic*)calloc(1, sizeof(Kinematic));
-
+    k->max_accel = 1.0f;
     return k;
 }
 
@@ -73,8 +73,12 @@ void km_update(Kinematic *input, SteeringOutput *steering, float time) {
     vec3_mul_scalar(&(steering->linear), time, &new_vel);
     vec3_add(&(input->velocity), &new_vel, &(input->velocity));
 
-    input->rotation += steering->angular * time;
+    if(vec3_length(&(input->velocity)) > input->max_accel) {
+        vec3_normalize(&(input->velocity), &(input->velocity));
+        vec3_mul_scalar(&(input->velocity), input->max_accel, &(input->velocity));
+    }
 
+    input->rotation += steering->angular * time;
 };
 
 KinematicSteeringOutput* kmseek_get_steering(KinematicSeek* k) {
@@ -142,5 +146,6 @@ KinematicSteeringOutput* kmwander_get_steering(KinematicWander* k) {
 
     // Chage the rotation randomly
     steering->rotation = rand * k->max_rotation;
+
     return steering;
 }

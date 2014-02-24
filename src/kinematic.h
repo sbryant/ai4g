@@ -11,6 +11,7 @@ typedef struct s_kinematic {
     float orientation;
     vec3 velocity;
     float rotation;
+    float max_accel;
 } Kinematic;
 
 typedef struct s_kinematic_steering_output {
