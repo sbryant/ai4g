@@ -43,17 +43,10 @@ int KeyboardEventFilter(void *user_data, SDL_Event *event) {
     return 0;
 }
 
-void entity_init(Entity *e, int spacing_x, int spacing_y) {
-    e->r = 0, e->g = 0, e->b = 0;
-    e->a = SDL_ALPHA_OPAQUE;
-    e->kinematic->position.x = 0.0f, e->kinematic->position.y = 0.0f, e->kinematic->position.z = 0.0f;
-    e->kinematic->orientation = 0.0f;
-}
-
-void render_entity(SDL_Surface *surface, Entity *e, int w, int h) {
+void render_entity(SDL_Surface *surface, Entity *e, int w, int h, int r, int g, int b, int a) {
     SDL_Rect rect;
     entity_make_rect(e, w, h, &rect);
-    SDL_FillRect(surface, &rect, SDL_MapRGBA(surface->format, e->r, e->g, e->b, e->a));
+    SDL_FillRect(surface, &rect, SDL_MapRGBA(surface->format, r, g, b, SDL_ALPHA_OPAQUE));
 }
 
 void render_grid(SDL_Surface *surface, SDL_Rect *grid, int count) {
@@ -132,15 +125,11 @@ int main(int argc, char** argv) {
         grid_rects[index].h = 1;
     }
 
-    Entity player;
-    player.kinematic = km_make(NULL);
-    entity_init(&player, spacing_x, spacing_y);
-    player.r = 255, player.b = 255;
+    Entity player; bzero(&player, sizeof(Entity));
+    entity_init(&player);
 
-    Entity target;
-    target.kinematic = km_make(NULL);
-    entity_init(&target, spacing_x, spacing_y);
-    target.b = 255;
+    Entity target; bzero(&target, sizeof(Entity));
+    entity_init(&target);
 
     /* initial positions in the world */
     target.kinematic->position.x = 4.0f;
@@ -210,9 +199,13 @@ int main(int argc, char** argv) {
         // Draw grid and Entities
         SDL_FillRect(grid_surface, NULL, SDL_MapRGBA(grid_surface->format, 0, 0, 0, 255));
         render_grid(grid_surface, grid_rects, num_vert_lines + num_horiz_lines);
-        // entities are spacing_x - 1 wide, / spacing_y - 1 pixels high
-        render_entity(grid_surface, &player, spacing_x - 1, spacing_y - 1);
-        render_entity(grid_surface, &target, spacing_x - 1, spacing_y - 1);
+
+        // entities are spacing_x - 1 wide, / spacing_y - 1 pixels high (fills in a grid)
+
+        // blue player
+        render_entity(grid_surface, &player, spacing_x - 1, spacing_y - 1, 0, 0, 255, 0);
+        // purple target
+        render_entity(grid_surface, &target, spacing_x - 1, spacing_y - 1, 180, 0, 255, 0);
 
         // Upload pixels to video card
         SDL_UpdateTexture(grid_texture, NULL, grid_surface->pixels, grid_surface->pitch);
