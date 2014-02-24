@@ -60,6 +60,24 @@ void render_grid(SDL_Surface *surface, SDL_Rect *grid, int count) {
     SDL_FillRects(surface, grid, count, SDL_MapRGBA(surface->format, 0, 255, 0, SDL_ALPHA_OPAQUE));
 }
 
+void wrap_position(Entity *e) {
+    if(roundf(e->kinematic->position.x) > 49.0f) {
+        e->kinematic->position.x = 0.0f;
+    }
+
+    if(roundf(e->kinematic->position.x) < 0.0f) {
+        e->kinematic->position.x = 49.0f;
+    }
+
+    if(roundf(e->kinematic->position.y) > 49.0f) {
+        e->kinematic->position.y = 0.0f;
+    }
+
+    if(roundf(e->kinematic->position.y) < 0.0f) {
+        e->kinematic->position.y = 49.0f;
+    }
+}
+
 int main(int argc, char** argv) {
     AppState app;
     app.quit = 0;
@@ -174,7 +192,12 @@ int main(int argc, char** argv) {
 
                 // Move the character
                 km_update(player.kinematic, &steering, 1.0f);
-                //km_update(target.kinematic, &wsteering, 1.0f);
+                km_update(target.kinematic, &wsteering, 1.0f);
+
+                // don't wander off the world.
+                wrap_position(&player);
+                wrap_position(&target);
+
                 free(ksteering);
                 free(kwsteering);
             }
