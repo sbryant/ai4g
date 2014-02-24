@@ -44,7 +44,6 @@ int KeyboardEventFilter(void *user_data, SDL_Event *event) {
 }
 
 void entity_init(Entity *e, int spacing_x, int spacing_y) {
-    e->spacing_x = spacing_x, e->spacing_y = spacing_y;
     e->r = 0, e->g = 0, e->b = 0;
     e->a = SDL_ALPHA_OPAQUE;
     e->kinematic->position.x = 0.0f, e->kinematic->position.y = 0.0f, e->kinematic->position.z = 0.0f;
