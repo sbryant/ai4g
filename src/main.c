@@ -142,7 +142,7 @@ int main(int argc, char** argv) {
     entity_init(&target, spacing_x, spacing_y);
     target.b = 255;
 
-    /* dirty intial kinematic positions */
+    /* initial positions in the world */
     target.kinematic->position.x = 4.0f;
     target.kinematic->position.y = 19.0f;
 
