@@ -213,7 +213,10 @@ int main(int argc, char** argv) {
 
     free(player.kinematic);
     free(target.kinematic);
+    free(grid_rects);
 
+    SDL_DestroyTexture(grid_texture);
+    SDL_FreeSurface(grid_surface);
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
 
