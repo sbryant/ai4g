@@ -98,13 +98,10 @@ int main(int argc, char** argv) {
 
     int num_vert_lines = GRID_W;
     int num_horiz_lines = GRID_H;
-    int index = 0;
     float spacing_x = (GRID_SIZE_W / (float)num_vert_lines);
     float spacing_y = (GRID_SIZE_H / (float)num_horiz_lines);
 
-    SDL_Rect *grid_rects = NULL;
     SDL_Rect screen_rect;
-
     screen_rect.x = 800 / 2 - GRID_SIZE_W / 2;
     screen_rect.y = 600 / 2 - GRID_SIZE_H / 2;
     screen_rect.w = GRID_SIZE_W;
@@ -116,8 +113,11 @@ int main(int argc, char** argv) {
     grid_surface = SDL_CreateRGBSurface(0, GRID_SIZE_W, GRID_SIZE_H, 32, 0xFF000000, 0x00FF0000, 0x0000FF00, 0x000000FF);
     grid_texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STREAMING, GRID_SIZE_W, GRID_SIZE_H);
 
+
+    SDL_Rect *grid_rects = NULL;
     grid_rects = calloc(num_vert_lines + num_horiz_lines, sizeof(SDL_Rect));
 
+    int index = 0;
     for(int x = 0; x < num_vert_lines; x++,index++) {
         grid_rects[index].x = x * spacing_x;
         grid_rects[index].y = 0;
