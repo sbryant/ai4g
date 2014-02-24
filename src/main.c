@@ -161,18 +161,14 @@ int main(int argc, char** argv) {
             kw.max_rotation = 1.0f;
             entity_make_static(&target, &(kw.character));
 
-            // Get velocity and orientation from output
+            // Get velocity and orientation
             KinematicSteeringOutput *ksteering = kmarrive_get_steering(&k);
-            KinematicSteeringOutput *kwsteering = kmwander_get_steering(&kw);
 
             if(ksteering) {
                 // Setup our steering from the KinematicSteeringOutput
                 SteeringOutput steering;
-                SteeringOutput wsteering;
                 vec3_set_vec3(&(steering.linear), &(ksteering->velocity));
-                vec3_set_vec3(&(wsteering.linear), &(kwsteering->velocity));
                 steering.angular = 0.0f;
-                wsteering.angular = kwsteering->rotation;
 
                 // Update chasing character's velocity from the KinematicSteeringOutput
                 // This will actually stop the character once it is close enough
@@ -181,19 +177,25 @@ int main(int argc, char** argv) {
                 // Move the character
                 km_update(player.kinematic, &steering, 1.0f);
 
-                // Cap target velocity
-                vec3_set_vec3(&(target.kinematic->velocity), &(wsteering.linear));
-
-                // let the target wander
-                km_update(target.kinematic, &wsteering, 1.0f);
-
                 // don't wander off the world.
                 wrap_position(&player);
-                wrap_position(&target);
 
                 free(ksteering);
-                free(kwsteering);
             }
+
+            KinematicSteeringOutput *kwsteering = kmwander_get_steering(&kw);
+            SteeringOutput wsteering;
+            wsteering.angular = kwsteering->rotation;
+            vec3_set_vec3(&(wsteering.linear), &(kwsteering->velocity));
+
+            // Cap target velocity
+            vec3_set_vec3(&(target.kinematic->velocity), &(wsteering.linear));
+
+            // let the target wander
+            km_update(target.kinematic, &wsteering, 1.0f);
+            wrap_position(&target);
+
+            free(kwsteering);
         }
 
         // Draw grid and Entities
