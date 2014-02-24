@@ -73,26 +73,14 @@ void entity_init(Entity *e, int spacing_x, int spacing_y) {
     place_entity(e, 0, 0);
 }
 
-void render_entity(SDL_Renderer *renderer, Entity *e) {
+void render_entity(SDL_Surface *surface, Entity *e) {
     SDL_Rect rect;
     entity_make_rect(e, &rect);
-    // Draw entity A
-    SDL_SetRenderDrawColor(renderer,
-                           e->r, e->g, e->b, e->a);
-    SDL_RenderFillRect(renderer, &rect);
+    SDL_FillRect(surface, &rect, SDL_MapRGBA(surface->format, e->r, e->g, e->b, e->a));
 }
 
-void render_grid(SDL_Renderer *renderer, SDL_Point *grid, int w, int h) {
-    SDL_SetRenderDrawColor(renderer,
-                           0, 255, 0, SDL_ALPHA_OPAQUE);
-
-    // Draw grid
-    int index = 0;
-    for(int i = 1; i < w; i++, index+=2)
-        SDL_RenderDrawLines(renderer, &grid[index], 2);
-
-    for(int i = 0; i < h; i++, index+=2)
-        SDL_RenderDrawLines(renderer, &grid[index], 2);
+void render_grid(SDL_Surface *surface, SDL_Rect *grid, int count) {
+    SDL_FillRects(surface, grid, count, SDL_MapRGBA(surface->format, 0, 255, 0, SDL_ALPHA_OPAQUE));
 }
 
 int main(int argc, char** argv) {
@@ -115,33 +103,40 @@ int main(int argc, char** argv) {
 
     int num_vert_lines = GRID_W;
     int num_horiz_lines = GRID_H;
-    //int x_size = 4;
-    //int y_size = 4;
     int index = 0;
-
-    SDL_Point *grid_points = NULL;
-
-    grid_points = calloc((num_vert_lines * 2)  + (num_horiz_lines * 2), sizeof(SDL_Point));
-
     float spacing_x = (GRID_SIZE_W / (float)num_vert_lines);
     float spacing_y = (GRID_SIZE_H / (float)num_horiz_lines);
 
-    //int start = 1280 / 2;
+    SDL_Point *grid_points = NULL;
+    SDL_Rect *grid_rects = NULL;
+    SDL_Rect screen_rect;
 
-    for(int x = 0; x < num_vert_lines; x++,index+=2) {
-        SDL_Point vl_start = { (x+1) * (spacing_x), spacing_y };
-        SDL_Point vl_end = { (x+1) * (spacing_x), 600 - spacing_y};
+    screen_rect.x = 800 / 2 - GRID_SIZE_W / 2;
+    screen_rect.y = 600 / 2 - GRID_SIZE_H / 2;
+    screen_rect.w = GRID_SIZE_W;
+    screen_rect.h = GRID_SIZE_H;
 
-        grid_points[index] = vl_start;
-        grid_points[index+1] = vl_end;
+    SDL_Surface *grid_surface = NULL;
+    SDL_Texture *grid_texture = NULL;
+
+    grid_surface = SDL_CreateRGBSurface(0, GRID_SIZE_W, GRID_SIZE_H, 32, 0xFF000000, 0x00FF0000, 0x0000FF00, 0x000000FF);
+    grid_texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STREAMING, GRID_SIZE_W, GRID_SIZE_H);
+
+    grid_points = calloc((num_vert_lines * 2)  + (num_horiz_lines * 2), sizeof(SDL_Point));
+    grid_rects = calloc(num_vert_lines + num_horiz_lines, sizeof(SDL_Rect));
+
+    for(int x = 0; x < num_vert_lines; x++,index++) {
+        grid_rects[index].x = x * spacing_x;
+        grid_rects[index].y = 0;
+        grid_rects[index].w = 1;
+        grid_rects[index].h = GRID_SIZE_H;
     }
 
-    for(int y = 0; y < num_horiz_lines; y++,index+=2) {
-        SDL_Point hl_start = { spacing_x,  (y+1) * spacing_y};
-        SDL_Point hl_end = { 600, (y+1) * spacing_y };
-
-        grid_points[index] = hl_start;
-        grid_points[index+1] = hl_end;
+    for(int y = 0; y < num_horiz_lines; y++,index++) {
+        grid_rects[index].x = 0;
+        grid_rects[index].y = y * spacing_y;
+        grid_rects[index].w = GRID_SIZE_W;
+        grid_rects[index].h = 1;
     }
 
     Entity player;
@@ -215,16 +210,25 @@ int main(int argc, char** argv) {
             }
         }
 
+
+        // Draw grid and Entities
+        SDL_FillRect(grid_surface, NULL, SDL_MapRGBA(grid_surface->format, 0, 0, 0, 255));
+        render_grid(grid_surface, grid_rects, num_vert_lines + num_horiz_lines);
+        render_entity(grid_surface, &player);
+        render_entity(grid_surface, &target);
+
+        // Upload pixels to video card
+        SDL_UpdateTexture(grid_texture, NULL, grid_surface->pixels, grid_surface->pitch);
+
         // Reset to black
         SDL_SetRenderDrawColor(renderer,
                                0, 0, 0, SDL_ALPHA_OPAQUE);
         SDL_RenderClear(renderer);
 
-        render_grid(renderer, grid_points, num_vert_lines, num_horiz_lines);
+        // Copy texture to framebuffer with rect
+        SDL_RenderCopy(renderer, grid_texture, NULL, &screen_rect);
 
-        render_entity(renderer, &player);
-        render_entity(renderer, &target);
-
+        // Show frame buffer
         SDL_RenderPresent(renderer);
 
         // Process any events
