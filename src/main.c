@@ -174,7 +174,7 @@ int main(int argc, char** argv) {
 
                 // Move the character
                 km_update(player.kinematic, &steering, 1.0f);
-                km_update(target.kinematic, &wsteering, 1.0f);
+                //km_update(target.kinematic, &wsteering, 1.0f);
                 free(ksteering);
                 free(kwsteering);
             }
