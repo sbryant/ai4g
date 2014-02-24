@@ -14,8 +14,8 @@ SDL_Rect *entity_make_rect(Entity *e, int w, int h, SDL_Rect *output) {
     if(!output)
         output = (SDL_Rect *)malloc(sizeof(SDL_Rect));
 
-    output->x = (w + 1) * roundf(e->kinematic->position.x) + 1.0f;
-    output->y = (h + 1) * roundf(e->kinematic->position.y) + 1.0f;
+    output->x = (w + 1) * roundf(e->kinematic->position.x) + 1.0;
+    output->y = (h + 1) * roundf(e->kinematic->position.y) + 1.0;
 
     output->w = w;
     output->h = h;
