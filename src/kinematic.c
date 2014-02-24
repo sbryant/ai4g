@@ -135,7 +135,7 @@ KinematicSteeringOutput* kmwander_get_steering(KinematicWander* k) {
     vec3 orientation;
     orientation.x = sinf(k->character.orientation);
     orientation.y = cosf(k->character.orientation);
-    orientation.z = 0.0f;
+    orientation.z = 1.0f;
 
     vec3_mul_scalar(&orientation, k->max_speed, &(steering->velocity));
 
