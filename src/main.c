@@ -158,7 +158,7 @@ int main(int argc, char** argv) {
             KinematicWander kw;
             bzero(&kw, sizeof(KinematicWander));
             kw.max_speed = 0.1f;
-            kw.max_rotation = 0.005f;
+            kw.max_rotation = 0.0001f;
             entity_make_static(&target, &(kw.character));
 
             // Get velocity and orientation
