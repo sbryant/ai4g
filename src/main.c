@@ -84,7 +84,6 @@ int main(int argc, char** argv) {
     float spacing_x = (GRID_SIZE_W / (float)num_vert_lines);
     float spacing_y = (GRID_SIZE_H / (float)num_horiz_lines);
 
-    SDL_Point *grid_points = NULL;
     SDL_Rect *grid_rects = NULL;
     SDL_Rect screen_rect;
 
@@ -99,7 +98,6 @@ int main(int argc, char** argv) {
     grid_surface = SDL_CreateRGBSurface(0, GRID_SIZE_W, GRID_SIZE_H, 32, 0xFF000000, 0x00FF0000, 0x0000FF00, 0x000000FF);
     grid_texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STREAMING, GRID_SIZE_W, GRID_SIZE_H);
 
-    grid_points = calloc((num_vert_lines * 2)  + (num_horiz_lines * 2), sizeof(SDL_Point));
     grid_rects = calloc(num_vert_lines + num_horiz_lines, sizeof(SDL_Rect));
 
     for(int x = 0; x < num_vert_lines; x++,index++) {
@@ -212,7 +210,7 @@ int main(int argc, char** argv) {
             break;
     }
 
-    free(grid_points);
+
     free(player.kinematic);
     free(target.kinematic);
 
