@@ -203,7 +203,6 @@ int main(int argc, char** argv) {
             }
         }
 
-
         // Draw grid and Entities
         SDL_FillRect(grid_surface, NULL, SDL_MapRGBA(grid_surface->format, 0, 0, 0, 255));
         render_grid(grid_surface, grid_rects, num_vert_lines + num_horiz_lines);
@@ -232,7 +231,6 @@ int main(int argc, char** argv) {
         if(app.quit)
             break;
     }
-
 
     free(player.kinematic);
     free(target.kinematic);
