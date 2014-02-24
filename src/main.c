@@ -149,7 +149,7 @@ int main(int argc, char** argv) {
             // Setup steering algorithim inputs
             KinematicArrive k;
             bzero(&k, sizeof(KinematicArrive));
-            k.max_speed = 0.1f;
+            k.max_speed = 0.01f;
             k.radius = 1.0f;
             k.time_to_target = 0.25f;
             entity_make_static(&target, &(k.target));
@@ -157,8 +157,8 @@ int main(int argc, char** argv) {
 
             KinematicWander kw;
             bzero(&kw, sizeof(KinematicWander));
-            kw.max_speed = 0.1f;
-            kw.max_rotation = 0.0001f;
+            kw.max_speed = 0.01f;
+            kw.max_rotation = 0.00001f / M_PI;
             entity_make_static(&target, &(kw.character));
 
             // Get velocity and orientation
@@ -175,7 +175,7 @@ int main(int argc, char** argv) {
                 vec3_set_vec3(&(player.kinematic->velocity), &(steering.linear));
 
                 // Move the character
-                km_update(player.kinematic, &steering, 1.0f);
+                km_update(player.kinematic, &steering, 16.0f);
 
                 // don't wander off the world.
                 wrap_position(&player);
@@ -192,7 +192,7 @@ int main(int argc, char** argv) {
             vec3_set_vec3(&(target.kinematic->velocity), &(wsteering.linear));
 
             // let the target wander
-            km_update(target.kinematic, &wsteering, 1.0f);
+            km_update(target.kinematic, &wsteering, 16.0f);
             wrap_position(&target);
 
             free(kwsteering);
