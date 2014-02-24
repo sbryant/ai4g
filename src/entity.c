@@ -29,7 +29,7 @@ Static *entity_make_static(Entity *e, Static *s) {
 
     s->position.x = e->kinematic->position.x;
     s->position.y = e->kinematic->position.y;
-    s->position.z = 0.0f;
+    s->position.z = 1.0f;
     s->orientation = e->kinematic->orientation;
 
     return s;
