@@ -149,7 +149,7 @@ int main(int argc, char** argv) {
             // Setup steering algorithim inputs
             KinematicArrive k;
             bzero(&k, sizeof(KinematicArrive));
-            k.max_speed = 0.01f;
+            k.max_speed = 4.0f;
             k.radius = 1.0f;
             k.time_to_target = 0.25f;
             entity_make_static(&target, &(k.target));
@@ -157,8 +157,8 @@ int main(int argc, char** argv) {
 
             KinematicWander kw;
             bzero(&kw, sizeof(KinematicWander));
-            kw.max_speed = 0.01f;
-            kw.max_rotation = 0.009f;
+            kw.max_speed = 4.0f;
+            kw.max_rotation = 0.5f;
             entity_make_static(&target, &(kw.character));
 
             // Get velocity and orientation
