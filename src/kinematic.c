@@ -63,7 +63,7 @@ float get_new_orientation(Static *s, float current, vec3 *velocity) {
     return current;
 }
 
-void km_update(Kinematic *input, SteeringOutput *steering, float time) {
+void km_update(Kinematic *input, SteeringOutput *steering, const float max_speed, const float time) {
     vec3 new_pos, new_vel;
     vec3_mul_scalar(&(input->velocity), time, &new_pos);
     vec3_add(&(input->position), &new_pos, &(input->position));
@@ -73,9 +73,9 @@ void km_update(Kinematic *input, SteeringOutput *steering, float time) {
     vec3_mul_scalar(&(steering->linear), time, &new_vel);
     vec3_add(&(input->velocity), &new_vel, &(input->velocity));
 
-    if(vec3_length(&(input->velocity)) > input->max_accel) {
+    if(vec3_length(&(input->velocity)) > max_speed) {
         vec3_normalize(&(input->velocity), &(input->velocity));
-        vec3_mul_scalar(&(input->velocity), input->max_accel, &(input->velocity));
+        vec3_mul_scalar(&(input->velocity), max_speed, &(input->velocity));
     }
 
     input->rotation += steering->angular * time;
