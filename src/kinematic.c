@@ -73,12 +73,13 @@ void km_update(Kinematic *input, SteeringOutput *steering, const float max_speed
     vec3_mul_scalar(&(steering->linear), time, &new_vel);
     vec3_add(&(input->velocity), &new_vel, &(input->velocity));
 
+    input->orientation += steering->angular * time;
+
     if(vec3_length(&(input->velocity)) > max_speed) {
         vec3_normalize(&(input->velocity), &(input->velocity));
         vec3_mul_scalar(&(input->velocity), max_speed, &(input->velocity));
     }
 
-    input->rotation += steering->angular * time;
 };
 
 KinematicSteeringOutput* kmseek_get_steering(KinematicSeek* k) {
