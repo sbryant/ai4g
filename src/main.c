@@ -21,7 +21,7 @@
 
 typedef struct s_app_state {
     short quit;
-
+    short pause;
 } AppState;
 
 int KeyboardEventFilter(void *user_data, SDL_Event *event) {
@@ -29,6 +29,10 @@ int KeyboardEventFilter(void *user_data, SDL_Event *event) {
     SDL_KeyboardEvent ke;
     switch(event->type) {
     case SDL_KEYUP:
+        ke = event->key;
+        if(ke.keysym.scancode == SDL_SCANCODE_SPACE)
+            app->pause = app->pause ? 0 : 1;
+        break;
     case SDL_KEYDOWN:
         ke = event->key;
         if(ke.keysym.sym == SDLK_q && ke.keysym.mod & KMOD_GUI)
@@ -74,6 +78,7 @@ void wrap_position(Entity *e) {
 int main(int argc, char** argv) {
     AppState app;
     app.quit = 0;
+    app.pause = 0;
 
     SDL_Init(SDL_INIT_VIDEO);
 
@@ -145,6 +150,8 @@ int main(int argc, char** argv) {
 
         while(simulation_time < now) {
             simulation_time += 16.0f;
+            if(app.pause)
+                continue;
 
             // Setup steering algorithim inputs
             KinematicArrive k;
