@@ -177,10 +177,6 @@ int main(int argc, char** argv) {
                 vec3_set_vec3(&(steering.linear), &(ksteering->velocity));
                 steering.angular = 0.0f;
 
-                // Update chasing character's velocity from the KinematicSteeringOutput
-                // This will actually stop the character once it is close enough
-                vec3_set_vec3(&(player.kinematic->velocity), &(steering.linear));
-
                 // Move the character
                 km_update(player.kinematic, &steering, 1.0f, 16.0f / 1000.0f);
 
@@ -194,9 +190,6 @@ int main(int argc, char** argv) {
             SteeringOutput wsteering;
             wsteering.angular = kwsteering->rotation;
             vec3_set_vec3(&(wsteering.linear), &(kwsteering->velocity));
-
-            // Cap target velocity
-            vec3_set_vec3(&(target.kinematic->velocity), &(wsteering.linear));
 
             // let the target wander
             km_update(target.kinematic, &wsteering, 1.0f, 16.0f / 1000.0f);
