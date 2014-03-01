@@ -178,7 +178,7 @@ int main(int argc, char** argv) {
                 steering.angular = 0.0f;
 
                 // Move the character
-                km_update(player.kinematic, &steering, 1.0f, 16.0f / 1000.0f);
+                km_update(player.kinematic, &steering, 5.0f, 16.0f / 1000.0f);
 
                 // don't wander off the world.
                 wrap_position(&player);
@@ -192,7 +192,7 @@ int main(int argc, char** argv) {
             vec3_set_vec3(&(wsteering.linear), &(kwsteering->velocity));
 
             // let the target wander
-            km_update(target.kinematic, &wsteering, 1.0f, 16.0f / 1000.0f);
+            km_update(target.kinematic, &wsteering, 5.0f, 16.0f / 1000.0f);
             wrap_position(&target);
 
             free(kwsteering);
