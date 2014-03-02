@@ -184,7 +184,6 @@ int main(int argc, char** argv) {
                 // Setup our steering from the KinematicSteeringOutput
                 SteeringOutput steering;
                 vec3_set_vec3(&(steering.linear), &(ksteering->velocity));
-                steering.angular = 0.0f;
 
                 // Move the character
                 km_update(player.kinematic, &steering, max_speed, time_step_in_seconds);
