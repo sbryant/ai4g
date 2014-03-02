@@ -50,9 +50,9 @@ int KeyboardEventFilter(void *user_data, SDL_Event *event) {
     return 0;
 }
 
-void render_entity(SDL_Surface *surface, Entity *e, int w, int h, int r, int g, int b, int a) {
+void render_entity(SDL_Surface *surface, Entity *e, int snap, int w, int h, int r, int g, int b, int a) {
     SDL_Rect rect;
-    entity_make_rect(e, w, h, &rect);
+    entity_make_rect(e, w, h, &rect, snap);
     SDL_FillRect(surface, &rect, SDL_MapRGBA(surface->format, r, g, b, SDL_ALPHA_OPAQUE));
 }
 
@@ -214,9 +214,9 @@ int main(int argc, char** argv) {
         // entities are spacing_x - 1 wide, / spacing_y - 1 pixels high (fills in a grid)
 
         // blue player
-        render_entity(grid_surface, &player, spacing_x - 1, spacing_y - 1, 0, 0, 255, 0);
+        render_entity(grid_surface, &player, app.snap, spacing_x - 1, spacing_y - 1, 0, 0, 255, 0);
         // purple target
-        render_entity(grid_surface, &target, spacing_x - 1, spacing_y - 1, 180, 0, 255, 0);
+        render_entity(grid_surface, &target, app.snap, spacing_x - 1, spacing_y - 1, 180, 0, 255, 0);
 
         // Upload pixels to video card
         SDL_UpdateTexture(grid_texture, NULL, grid_surface->pixels, grid_surface->pitch);
