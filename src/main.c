@@ -22,6 +22,7 @@
 typedef struct s_app_state {
     short quit;
     short pause;
+    short snap;
 } AppState;
 
 int KeyboardEventFilter(void *user_data, SDL_Event *event) {
@@ -30,8 +31,10 @@ int KeyboardEventFilter(void *user_data, SDL_Event *event) {
     switch(event->type) {
     case SDL_KEYUP:
         ke = event->key;
-        if(ke.keysym.scancode == SDL_SCANCODE_SPACE)
+        if(ke.keysym.sym == SDLK_SPACE)
             app->pause = app->pause ? 0 : 1;
+        if(ke.keysym.sym == SDLK_s)
+            app->snap = app->snap ? 0 : 1;
         break;
     case SDL_KEYDOWN:
         ke = event->key;
@@ -79,6 +82,7 @@ int main(int argc, char** argv) {
     AppState app;
     app.quit = 0;
     app.pause = 0;
+    app.snap = 1;
 
     SDL_Init(SDL_INIT_VIDEO);
 
