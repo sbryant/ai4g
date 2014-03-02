@@ -144,19 +144,24 @@ int main(int argc, char** argv) {
     player.kinematic->position.y = 30.0f;
 
     float simulation_time = 0, now = 0;
+
+    // 60fps time step.
+    float time_step = 1.0f / 60.0f;
+    float time_step_in_seconds = time_step / 1000.0f;
+    float max_speed = 2.0f;
     srand(time(NULL));
     while(1) {
         now = SDL_GetTicks();
 
         while(simulation_time < now) {
-            simulation_time += 16.0f;
+            simulation_time += time_step;
             if(app.pause)
                 continue;
 
             // Setup steering algorithim inputs
             KinematicArrive k;
             bzero(&k, sizeof(KinematicArrive));
-            k.max_speed = 4.0f;
+            k.max_speed = max_speed;
             k.radius = 1.0f;
             k.time_to_target = 0.25f;
             entity_make_static(&target, &(k.target));
@@ -164,7 +169,7 @@ int main(int argc, char** argv) {
 
             KinematicWander kw;
             bzero(&kw, sizeof(KinematicWander));
-            kw.max_speed = 4.0f;
+            kw.max_speed = max_speed;
             kw.max_rotation = 0.5f;
             entity_make_static(&target, &(kw.character));
 
@@ -178,7 +183,7 @@ int main(int argc, char** argv) {
                 steering.angular = 0.0f;
 
                 // Move the character
-                km_update(player.kinematic, &steering, 5.0f, 16.0f / 1000.0f);
+                km_update(player.kinematic, &steering, max_speed, time_step_in_seconds);
 
                 // don't wander off the world.
                 wrap_position(&player);
@@ -192,7 +197,7 @@ int main(int argc, char** argv) {
             vec3_set_vec3(&(wsteering.linear), &(kwsteering->velocity));
 
             // let the target wander
-            km_update(target.kinematic, &wsteering, 5.0f, 16.0f / 1000.0f);
+            km_update(target.kinematic, &wsteering, max_speed, time_step_in_seconds);
             wrap_position(&target);
 
             free(kwsteering);
