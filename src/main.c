@@ -9,6 +9,7 @@
 #include "vector.h"
 #include "kinematic.h"
 #include "entity.h"
+#include "dynamic.h"
 
 #define GRID_H 50
 #define GRID_W 50
@@ -152,7 +153,7 @@ int main(int argc, char** argv) {
     // 60fps time step.
     float time_step = 1.0f / 60.0f;
     float time_step_in_seconds = time_step / 1000.0f;
-    float max_speed = 2.0f;
+    float max_speed = 10.0f;
     srand(time(NULL));
     while(1) {
         now = SDL_GetTicks();
@@ -163,13 +164,14 @@ int main(int argc, char** argv) {
                 continue;
 
             // Setup steering algorithim inputs
-            KinematicArrive k;
-            bzero(&k, sizeof(KinematicArrive));
+            Arrive k;
+            arrive_init(&k, player.kinematic, target.kinematic);
+
+            // Tune dynamic arrive speed and acceleartion
             k.max_speed = max_speed;
-            k.radius = 1.0f;
-            k.time_to_target = 0.25f;
-            entity_make_static(&target, &(k.target));
-            entity_make_static(&player, &(k.character));
+            k.max_acceleration = max_speed + 2.0;
+            k.target_radius = 0.5f;
+            k.slow_radius = 0.75f;
 
             KinematicWander kw;
             bzero(&kw, sizeof(KinematicWander));
@@ -178,15 +180,11 @@ int main(int argc, char** argv) {
             entity_make_static(&target, &(kw.character));
 
             // Get velocity and orientation
-            KinematicSteeringOutput *ksteering = kmarrive_get_steering(&k);
+            SteeringOutput *ksteering = arrive_get_steering(&k);
 
             if(ksteering) {
-                // Setup our steering from the KinematicSteeringOutput
-                SteeringOutput steering;
-                vec3_set_vec3(&(steering.linear), &(ksteering->velocity));
-
                 // Move the character
-                km_update(player.kinematic, &steering, max_speed, time_step_in_seconds);
+                km_update(player.kinematic, ksteering, max_speed, time_step_in_seconds);
 
                 // don't wander off the world.
                 wrap_position(&player);
