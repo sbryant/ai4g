@@ -172,7 +172,7 @@ vec4* vec4_cross(vec4* const a, vec4* const b) {
     v->x = (a->y * b->z) - (b->y * a->z);
     v->y = (a->z * b->x) - (b->z * a->x);
     v->z = (a->x * b->y) - (b->x * a->y);
-    v->w = 1.0;
+    v->w = 1.0f;
 
     return v;
 }
