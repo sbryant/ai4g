@@ -3,6 +3,7 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <assert.h>
 
 float vec4_length(vec4* const v) {
     return sqrtf((v->x * v->x) +
@@ -107,12 +108,10 @@ vec4 *vec4_div_scalar(vec4* const v, float const s) {
 }
 
 vec3 *vec3_div_scalar(const vec3* v, const float s, vec3 *out) {
+    assert(s != 0.0f);
     vec3* v2 = out;
     if(!v2)
         v2 = vec3_make();
-
-    if(!s)
-        return v2;
 
     if(v->x)
         v2->x = v->x / s;
@@ -146,14 +145,12 @@ vec4 *vec4_normalize(vec4* const v) {
 }
 
 vec3 *vec3_normalize(const vec3 *v, vec3 *out) {
+    float v_len = vec3_length(v);
+    assert(v_len != 0.0f);
+
     vec3 *v2  = out;
     if (v2 == NULL)
         v2 = vec3_make();
-
-    float v_len = vec3_length(v);
-
-    if(v_len == 0.0f)
-        return v2;
 
     v2->x = v->x / v_len;
     v2->y = v->y / v_len;
