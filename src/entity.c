@@ -22,8 +22,8 @@ SDL_Rect *entity_make_rect(Entity *e, int w, int h, SDL_Rect *output, int snap) 
         y = roundf(y);
     }
 
-    output->x = (w + 1) * x + 1.0f;
-    output->y = (h + 1) * y + 1.0f;
+    output->x = (int)((w + 1.0f) * x + 1.0f);
+    output->y = (int)((h + 1.0f) * y + 1.0f);
 
     output->w = w;
     output->h = h;
