@@ -64,7 +64,7 @@ float get_new_orientation(Static *s, float current, vec3 *velocity) {
 }
 
 void km_update(Kinematic *input, SteeringOutput *steering, const float max_speed, const float time) {
-    vec3 new_pos, new_vel;
+    vec3 new_pos = {}, new_vel = {};
     vec3_mul_scalar(&(input->velocity), time, &new_pos);
     vec3_add(&(input->position), &new_pos, &(input->position));
 
