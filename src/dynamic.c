@@ -37,7 +37,7 @@ void arrive_init(Arrive *in, Kinematic *character, Kinematic *target) {
     if(!arrive)
         arrive = arrive_make(NULL);
     else
-        bzero(in, sizeof(Arrive));
+        bzero(arrive, sizeof(Arrive));
     arrive->time_to_target = 0.1f;
     arrive->character = character;
     arrive->target = target;
