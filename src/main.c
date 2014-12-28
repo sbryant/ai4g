@@ -62,20 +62,20 @@ void render_grid(SDL_Surface *surface, SDL_Rect *grid, int count) {
 }
 
 void wrap_position(Entity *e) {
-    if(roundf(e->kinematic->position.x) > (GRID_W - 1)) {
+    if(roundf(e->kinematic->position.x) > ((float)GRID_W - 1.0f)) {
         e->kinematic->position.x = 0.0f;
     }
 
     if(roundf(e->kinematic->position.x) < 0.0f) {
-        e->kinematic->position.x = GRID_W - 1;
+        e->kinematic->position.x = (float)GRID_W - 1.0f;
     }
 
-    if(roundf(e->kinematic->position.y) > (GRID_H - 1)) {
+    if(roundf(e->kinematic->position.y) > ((float)GRID_H - 1.0f)) {
         e->kinematic->position.y = 0.0f;
     }
 
     if(roundf(e->kinematic->position.y) < 0.0f) {
-        e->kinematic->position.y = (GRID_H -1);
+        e->kinematic->position.y = ((float)GRID_H -1.0f);
     }
 }
 
