@@ -135,10 +135,10 @@ int main(int argc, char** argv) {
         grid_rects[index].h = 1;
     }
 
-    Entity player; bzero(&player, sizeof(Entity));
+    Entity player = { 0 };
     entity_init(&player);
 
-    Entity target; bzero(&target, sizeof(Entity));
+    Entity target = { 0 };
     entity_init(&target);
 
     /* initial positions in the world */
