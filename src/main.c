@@ -24,6 +24,7 @@ typedef struct s_app_state {
     short quit;
     short pause;
     short snap;
+    short run_sim;
 } AppState;
 
 int KeyboardEventFilter(void *user_data, SDL_Event *event) {
@@ -36,6 +37,8 @@ int KeyboardEventFilter(void *user_data, SDL_Event *event) {
             app->pause = app->pause ? 0 : 1;
         if(ke.keysym.sym == SDLK_s)
             app->snap = app->snap ? 0 : 1;
+        if(ke.keysym.sym == SDLK_r)
+            app->run_sim = app->run_sim ? 0 : 1;
         break;
     case SDL_KEYDOWN:
         ke = event->key;
@@ -84,6 +87,7 @@ int main(int argc, char** argv) {
     app.quit = 0;
     app.pause = 0;
     app.snap = 1;
+    app.run_sim = 1;
 
     SDL_Init(SDL_INIT_VIDEO);
 
@@ -148,61 +152,74 @@ int main(int argc, char** argv) {
     player.kinematic->position.x = 20.0f;
     player.kinematic->position.y = 30.0f;
 
-    float simulation_time = 0, now = 0;
+    float now = 0.0f, prev = 0.0f;
 
     // 60fps time step.
-    float time_step = 1.0f / 60.0f;
-    float time_step_in_seconds = time_step / 1000.0f;
     float max_speed = 10.0f;
+    float timeout = 0.0f;
     srand(time(NULL));
     while(1) {
+        // Process any events
+        SDL_Event event;
+        while(SDL_PollEvent(&event));
+
+        if(app.pause)
+            continue;
+
         now = SDL_GetTicks();
+        float dt = (now - prev) / 1000.0f;
 
-        while(simulation_time < now) {
-            simulation_time += time_step;
-            if(app.pause)
-                continue;
-
-            // Setup steering algorithim inputs
-            Arrive k;
-            arrive_init(&k, player.kinematic, target.kinematic);
-
-            // Tune dynamic arrive speed and acceleartion
-            k.max_speed = max_speed;
-            k.max_acceleration = max_speed + 2.0;
-            k.target_radius = 0.5f;
-            k.slow_radius = 0.75f;
-
-            KinematicWander kw;
-            bzero(&kw, sizeof(KinematicWander));
-            kw.max_speed = max_speed;
-            kw.max_rotation = 0.5f;
-            entity_make_static(&target, &(kw.character));
-
-            // Get velocity and orientation
-            SteeringOutput *ksteering = arrive_get_steering(&k);
-
-            if(ksteering) {
-                // Move the character
-                km_update(player.kinematic, ksteering, max_speed, time_step_in_seconds);
-
-                // don't wander off the world.
-                wrap_position(&player);
-
-                free(ksteering);
-            }
-
-            KinematicSteeringOutput *kwsteering = kmwander_get_steering(&kw);
-            SteeringOutput wsteering;
-            wsteering.angular = kwsteering->rotation;
-            vec3_set_vec3(&(wsteering.linear), &(kwsteering->velocity));
-
-            // let the target wander
-            km_update(target.kinematic, &wsteering, max_speed, time_step_in_seconds);
-            wrap_position(&target);
-
-            free(kwsteering);
+        if(timeout == 0.0f) {
+            // 500 ms timeout
+            timeout = now + 500;
         }
+
+        if(SDL_TICKS_PASSED(now, timeout) && app.run_sim) {
+            fprintf(stderr, "prev %0.3fms, now %0.3fms dt: %0.3fs\n", prev,  now, dt);
+            vec3_print(&(target.kinematic->position));
+            vec3_print(&(target.kinematic->velocity));
+            timeout = 0.0f; // reset timeout next loop
+        }
+
+        // Setup steering algorithim inputs
+        Arrive k;
+        arrive_init(&k, player.kinematic, target.kinematic);
+
+        // Tune dynamic arrive speed and acceleartion
+        k.max_speed = max_speed;
+        k.max_acceleration = max_speed * 0.5f;
+        k.target_radius = 10.0f;
+        k.slow_radius = 30.05f;
+
+        KinematicWander kw = {};
+        kw.max_speed = max_speed;
+        kw.max_rotation = 0.5f;
+        entity_make_static(&target, &(kw.character));
+
+        // Get velocity and orientation
+        SteeringOutput *ksteering = arrive_get_steering(&k);
+
+        if(ksteering && app.run_sim) {
+            // Move the character
+            km_update(player.kinematic, ksteering, max_speed, dt);
+
+            // don't wander off the world.
+            wrap_position(&player);
+
+            free(ksteering);
+        }
+
+        KinematicSteeringOutput *kwsteering = kmwander_get_steering(&kw);
+        SteeringOutput wsteering;
+        wsteering.angular = kwsteering->rotation;
+        vec3_set_vec3(&(wsteering.linear), &(kwsteering->velocity));
+
+        // let the target wander
+        if(app.run_sim)
+            km_update(target.kinematic, &wsteering, max_speed, dt);
+        wrap_position(&target);
+
+        free(kwsteering);
 
         // Draw grid and Entities
         SDL_FillRect(grid_surface, NULL, SDL_MapRGBA(grid_surface->format, 0, 0, 0, 255));
@@ -229,9 +246,7 @@ int main(int argc, char** argv) {
         // Show frame buffer
         SDL_RenderPresent(renderer);
 
-        // Process any events
-        SDL_Event event;
-        while(SDL_PollEvent(&event));
+        prev = now;
 
         if(app.quit)
             break;
