@@ -17,8 +17,8 @@
 #define GRID_SIZE_W 600
 #define GRID_SIZE_H 600
 
-#define GRID_SPACING_X GRID_SIZE_W / GRID_W
-#define GRID_SPACING_Y GRID_SIZE_H / 6RID_H
+#define GRID_SPACING_X (GRID_SIZE_W / GRID_W)
+#define GRID_SPACING_Y (GRID_SIZE_H / GRID_H)
 
 typedef struct s_app_state {
     short quit;
@@ -26,6 +26,8 @@ typedef struct s_app_state {
     short snap;
     short run_sim;
 } AppState;
+
+static SDL_Rect screen_rect;
 
 int KeyboardEventFilter(void *user_data, SDL_Event *event) {
     AppState *app = (AppState*)user_data;
@@ -54,14 +56,29 @@ int KeyboardEventFilter(void *user_data, SDL_Event *event) {
     return 0;
 }
 
-void render_entity(SDL_Surface *surface, Entity *e, int snap, int w, int h, int r, int g, int b, int a) {
-    SDL_Rect rect;
+void render_entity(SDL_Renderer *renderer, Entity *e, int snap, int w, int h, int r, int g, int b, int a) {
+    SDL_Rect rect = {};
     entity_make_rect(e, w, h, &rect, snap);
-    SDL_FillRect(surface, &rect, SDL_MapRGBA(surface->format, r, g, b, SDL_ALPHA_OPAQUE));
+    rect.x += GRID_W * 2;
+
+    SDL_SetRenderDrawColor(renderer, r, g, b, a);
+    SDL_RenderFillRect(renderer, &rect);
 }
 
-void render_grid(SDL_Surface *surface, SDL_Rect *grid, int count) {
-    SDL_FillRects(surface, grid, count, SDL_MapRGBA(surface->format, 0, 255, 0, SDL_ALPHA_OPAQUE));
+void render_grid(SDL_Renderer *renderer, SDL_Rect *grid, int count) {
+    SDL_SetRenderDrawColor(renderer, 0, 255, 0, 0);
+    SDL_RenderFillRects(renderer, grid, count);
+
+    SDL_Rect last_rect = grid[count - 1];
+    SDL_Rect final = last_rect;
+
+    // fill out gutter
+    final.x = (GRID_SPACING_X * count) / 2 + screen_rect.x;
+    final.y = 0;
+    final.h = GRID_SIZE_H;
+    final.w = 1;
+
+    SDL_RenderFillRect(renderer, &final);
 }
 
 void wrap_position(Entity *e) {
@@ -108,32 +125,25 @@ int main(int argc, char** argv) {
     float spacing_x = (GRID_SIZE_W / (float)num_vert_lines);
     float spacing_y = (GRID_SIZE_H / (float)num_horiz_lines);
 
-    SDL_Rect screen_rect;
+
     screen_rect.x = 800 / 2 - GRID_SIZE_W / 2;
     screen_rect.y = 600 / 2 - GRID_SIZE_H / 2;
     screen_rect.w = GRID_SIZE_W;
     screen_rect.h = GRID_SIZE_H;
-
-    SDL_Surface *grid_surface = NULL;
-    SDL_Texture *grid_texture = NULL;
-
-    grid_surface = SDL_CreateRGBSurface(0, GRID_SIZE_W, GRID_SIZE_H, 32, 0xFF000000, 0x00FF0000, 0x0000FF00, 0x000000FF);
-    grid_texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STREAMING, GRID_SIZE_W, GRID_SIZE_H);
-
 
     SDL_Rect *grid_rects = NULL;
     grid_rects = calloc(num_vert_lines + num_horiz_lines, sizeof(SDL_Rect));
 
     int index = 0;
     for(int x = 0; x < num_vert_lines; x++,index++) {
-        grid_rects[index].x = x * spacing_x;
-        grid_rects[index].y = 0;
+        grid_rects[index].x = (x * spacing_x) + screen_rect.x;
+        grid_rects[index].y = screen_rect.y;
         grid_rects[index].w = 1;
         grid_rects[index].h = GRID_SIZE_H;
     }
 
     for(int y = 0; y < num_horiz_lines; y++,index++) {
-        grid_rects[index].x = 0;
+        grid_rects[index].x = screen_rect.x;
         grid_rects[index].y = y * spacing_y;
         grid_rects[index].w = GRID_SIZE_W;
         grid_rects[index].h = 1;
@@ -152,16 +162,22 @@ int main(int argc, char** argv) {
     player.kinematic->position.x = 20.0f;
     player.kinematic->position.y = 30.0f;
 
+    player.kinematic->max_accel = 10.0f;
+
     float now = 0.0f, prev = 0.0f;
 
     // 60fps time step.
     float max_speed = 10.0f;
     float timeout = 0.0f;
     srand(time(NULL));
+
     while(1) {
         // Process any events
         SDL_Event event;
         while(SDL_PollEvent(&event));
+
+        if(app.quit)
+            break;
 
         if(app.pause)
             continue;
@@ -175,11 +191,22 @@ int main(int argc, char** argv) {
         }
 
         if(SDL_TICKS_PASSED(now, timeout) && app.run_sim) {
+
             fprintf(stderr, "prev %0.3fms, now %0.3fms dt: %0.3fs\n", prev,  now, dt);
+
+            fprintf(stderr, "player\n");
             vec3_print(&(target.kinematic->position));
-            vec3_print(&(target.kinematic->velocity));
+            fprintf(stderr, "velocity:%0.3fm/s\n", vec3_length((&(player.kinematic->velocity))));
+            fprintf(stderr, "max acceleration:%0.3fm/s\n", (player.kinematic->max_accel));
+
+            fprintf(stderr, "target\n");
+            vec3_print(&(target.kinematic->position));
+            fprintf(stderr, "velocity:%0.3fm/s\n", vec3_length((&(target.kinematic->velocity))));
+            fprintf(stderr, "max acceleration:%0.3fm/s\n", (target.kinematic->max_accel));
+            fprintf(stderr, "========\n");
             timeout = 0.0f; // reset timeout next loop
         }
+
 
         // Setup steering algorithim inputs
         Arrive k;
@@ -187,9 +214,9 @@ int main(int argc, char** argv) {
 
         // Tune dynamic arrive speed and acceleartion
         k.max_speed = max_speed;
-        k.max_acceleration = max_speed * 0.5f;
-        k.target_radius = 10.0f;
-        k.slow_radius = 30.05f;
+        k.max_acceleration = player.kinematic->max_accel;
+        k.target_radius = 1.0f;
+        k.slow_radius = 1.0f;
 
         KinematicWander kw = {};
         kw.max_speed = max_speed;
@@ -205,9 +232,10 @@ int main(int argc, char** argv) {
 
             // don't wander off the world.
             wrap_position(&player);
-
-            free(ksteering);
         }
+
+        if(ksteering)
+            free(ksteering);
 
         KinematicSteeringOutput *kwsteering = kmwander_get_steering(&kw);
         SteeringOutput wsteering;
@@ -221,43 +249,31 @@ int main(int argc, char** argv) {
 
         free(kwsteering);
 
-        // Draw grid and Entities
-        SDL_FillRect(grid_surface, NULL, SDL_MapRGBA(grid_surface->format, 0, 0, 0, 255));
-        render_grid(grid_surface, grid_rects, num_vert_lines + num_horiz_lines);
-
-        // entities are spacing_x - 1 wide, / spacing_y - 1 pixels high (fills in a grid)
-
-        // blue player
-        render_entity(grid_surface, &player, app.snap, spacing_x - 1, spacing_y - 1, 0, 0, 255, 0);
-        // purple target
-        render_entity(grid_surface, &target, app.snap, spacing_x - 1, spacing_y - 1, 180, 0, 255, 0);
-
-        // Upload pixels to video card
-        SDL_UpdateTexture(grid_texture, NULL, grid_surface->pixels, grid_surface->pitch);
 
         // Reset to black
         SDL_SetRenderDrawColor(renderer,
                                0, 0, 0, SDL_ALPHA_OPAQUE);
         SDL_RenderClear(renderer);
 
-        // Copy texture to framebuffer with rect
-        SDL_RenderCopy(renderer, grid_texture, NULL, &screen_rect);
+        // Draw grid and Entities
+        render_grid(renderer, grid_rects, num_vert_lines + num_horiz_lines);
+
+        // entities are spacing_x - 1 wide, / spacing_y - 1 pixels high (fills in a grid)
+        // blue player
+        render_entity(renderer, &player, app.snap, spacing_x - 1, spacing_y - 1, 0, 0, 255, 0);
+        // purple target
+        render_entity(renderer, &target, app.snap, spacing_x - 1, spacing_y - 1, 180, 0, 255, 0);
 
         // Show frame buffer
         SDL_RenderPresent(renderer);
 
         prev = now;
-
-        if(app.quit)
-            break;
     }
 
     free(player.kinematic);
     free(target.kinematic);
     free(grid_rects);
 
-    SDL_DestroyTexture(grid_texture);
-    SDL_FreeSurface(grid_surface);
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
 
