@@ -14,8 +14,11 @@
 #define GRID_H 75
 #define GRID_W 75
 
-#define GRID_SIZE_W 600
-#define GRID_SIZE_H 600
+#define SCREEN_SIZE_W 800
+#define SCREEN_SIZE_H 600
+
+#define GRID_SIZE_W SCREEN_SIZE_H
+#define GRID_SIZE_H SCREEN_SIZE_H
 
 #define GRID_SPACING_X (GRID_SIZE_W / GRID_W)
 #define GRID_SPACING_Y (GRID_SIZE_H / GRID_H)
@@ -115,7 +118,7 @@ int main(int argc, char** argv) {
 
     SDL_Window *window = SDL_CreateWindow(program_title,
                                           SDL_WINDOWPOS_CENTERED,  SDL_WINDOWPOS_CENTERED,
-                                          800, 600, SDL_WINDOW_SHOWN);
+                                          SCREEN_SIZE_W, SCREEN_SIZE_H, SDL_WINDOW_SHOWN);
 
     SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
@@ -127,8 +130,8 @@ int main(int argc, char** argv) {
     float spacing_y = (GRID_SIZE_H / (float)num_horiz_lines);
 
 
-    screen_rect.x = 800 / 2 - GRID_SIZE_W / 2;
-    screen_rect.y = 600 / 2 - GRID_SIZE_H / 2;
+    screen_rect.x = SCREEN_SIZE_W / 2 - GRID_SIZE_W / 2;
+    screen_rect.y = SCREEN_SIZE_H / 2 - GRID_SIZE_H / 2;
     screen_rect.w = GRID_SIZE_W;
     screen_rect.h = GRID_SIZE_H;
 
