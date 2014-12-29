@@ -105,7 +105,7 @@ int main(int argc, char** argv) {
     app.quit = 0;
     app.pause = 0;
     app.snap = 1;
-    app.run_sim = 1;
+    app.run_sim = 0;
 
     SDL_Init(SDL_INIT_VIDEO);
 
