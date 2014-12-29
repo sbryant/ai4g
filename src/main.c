@@ -199,7 +199,7 @@ int main(int argc, char** argv) {
             fprintf(stderr, "prev %0.3fms, now %0.3fms dt: %0.3fs\n", prev,  now, dt);
 
             fprintf(stderr, "player\n");
-            vec3_print(&(target.kinematic->position));
+            vec3_print(&(player.kinematic->position));
             fprintf(stderr, "velocity:%0.3fm/s\n", vec3_length((&(player.kinematic->velocity))));
             fprintf(stderr, "max acceleration:%0.3fm/s\n", (player.kinematic->max_accel));
 
