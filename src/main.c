@@ -59,7 +59,8 @@ int KeyboardEventFilter(void *user_data, SDL_Event *event) {
 void render_entity(SDL_Renderer *renderer, Entity *e, int snap, int w, int h, int r, int g, int b, int a) {
     SDL_Rect rect = {};
     entity_make_rect(e, w, h, &rect, snap);
-    rect.x += GRID_W * 2;
+    rect.x += screen_rect.x;
+    rect.y += screen_rect.y;
 
     SDL_SetRenderDrawColor(renderer, r, g, b, a);
     SDL_RenderFillRect(renderer, &rect);
