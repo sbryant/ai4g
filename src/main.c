@@ -11,8 +11,8 @@
 #include "entity.h"
 #include "dynamic.h"
 
-#define GRID_H 50
-#define GRID_W 50
+#define GRID_H 75
+#define GRID_W 75
 
 #define GRID_SIZE_W 600
 #define GRID_SIZE_H 600
@@ -157,11 +157,11 @@ int main(int argc, char** argv) {
     entity_init(&target);
 
     /* initial positions in the world */
-    target.kinematic->position.x = 4.0f;
-    target.kinematic->position.y = 19.0f;
+    target.kinematic->position.x = 49.0f;
+    target.kinematic->position.y = 49.0f;
 
-    player.kinematic->position.x = 20.0f;
-    player.kinematic->position.y = 30.0f;
+    player.kinematic->position.x = 0.0f;
+    player.kinematic->position.y = 0.0f;
 
     player.kinematic->max_accel = 10.0f;
 
