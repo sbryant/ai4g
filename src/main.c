@@ -225,31 +225,26 @@ int main(int argc, char** argv) {
         entity_make_static(&target, &(kw.character));
 
         // Get velocity and orientation
-        SteeringOutput *ksteering = arrive_get_steering(&k);
-
-        if(ksteering && app.run_sim) {
+        SteeringOutput ksteering = {};
+        if(arrive_get_steering(&k, &ksteering) && app.run_sim) {
             // Move the character
-            km_update(player.kinematic, ksteering, max_speed, dt);
+            km_update(player.kinematic, &ksteering, max_speed, dt);
 
             // don't wander off the world.
             wrap_position(&player);
         }
 
-        if(ksteering)
-            free(ksteering);
+        KinematicSteeringOutput kwsteering = {};
+        kmwander_get_steering(&kw, &kwsteering);
 
-        KinematicSteeringOutput *kwsteering = kmwander_get_steering(&kw);
         SteeringOutput wsteering;
-        wsteering.angular = kwsteering->rotation;
-        vec3_set_vec3(&(wsteering.linear), &(kwsteering->velocity));
+        wsteering.angular = kwsteering.rotation;
+        vec3_set_vec3(&(wsteering.linear), &(kwsteering.velocity));
 
         // let the target wander
         if(app.run_sim)
             km_update(target.kinematic, &wsteering, max_speed, dt);
         wrap_position(&target);
-
-        free(kwsteering);
-
 
         // Reset to black
         SDL_SetRenderDrawColor(renderer,

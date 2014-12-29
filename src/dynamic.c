@@ -43,8 +43,8 @@ void arrive_init(Arrive *in, Kinematic *character, Kinematic *target) {
     arrive->target = target;
 }
 
-SteeringOutput *arrive_get_steering(Arrive *arrive) {
-    SteeringOutput *steering = NULL;
+SteeringOutput *arrive_get_steering(Arrive *arrive, SteeringOutput *out) {
+    SteeringOutput *steering = out;
 
     vec3 direction;
     // Get the direction to the target
@@ -56,7 +56,7 @@ SteeringOutput *arrive_get_steering(Arrive *arrive) {
         return NULL;
     }
 
-    steering = so_make(NULL);
+    steering = so_make(steering);
 
     float target_speed;
 

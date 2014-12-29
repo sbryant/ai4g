@@ -50,7 +50,7 @@ Arrive *arrive_make(Arrive *in);
 
 void arrive_init(Arrive *in, Kinematic *character, Kinematic *target);
 
-SteeringOutput *arrive_get_steering(Arrive *arrive);
+SteeringOutput *arrive_get_steering(Arrive *arrive, SteeringOutput *out);
 
 Align *align_make(Align *in);
 

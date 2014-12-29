@@ -55,4 +55,4 @@ float get_new_orientation(Static *s, float current, vec3 *velocity);
 void km_update(Kinematic *input, SteeringOutput *steering, const float max_speed, const float time);
 KinematicSteeringOutput* kmseek_get_steering(KinematicSeek* k);
 KinematicSteeringOutput* kmarrive_get_steering(KinematicArrive* k);
-KinematicSteeringOutput* kmwander_get_steering(KinematicWander* k);
+KinematicSteeringOutput* kmwander_get_steering(KinematicWander* k, KinematicSteeringOutput *out);

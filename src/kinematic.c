@@ -129,8 +129,8 @@ KinematicSteeringOutput* kmarrive_get_steering(KinematicArrive* k) {
     return steering;
 }
 
-KinematicSteeringOutput* kmwander_get_steering(KinematicWander* k) {
-    KinematicSteeringOutput *steering = kso_make(NULL);
+KinematicSteeringOutput* kmwander_get_steering(KinematicWander* k, KinematicSteeringOutput* out) {
+    KinematicSteeringOutput *steering = kso_make(out);
 
     // convert orentation to a vector
     vec3 orientation;
